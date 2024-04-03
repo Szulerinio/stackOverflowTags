@@ -186,12 +186,10 @@ export default function EnhancedTable() {
               onRequestSort={handleRequestSort}
             />
             <TableBody>
-              {visibleRows.map((row, index) => {
-                const labelId = `enhanced-table-checkbox-${index}`;
-
+              {visibleRows.map((row) => {
                 return (
                   <TableRow hover tabIndex={-1} key={row.name}>
-                    <TableCell component="th" id={labelId} scope="row">
+                    <TableCell component="th" scope="row">
                       {row.name}
                     </TableCell>
                     <TableCell align="right">{row.count}</TableCell>
@@ -211,7 +209,7 @@ export default function EnhancedTable() {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPageOptions={[]}
           component="div"
           count={rows.length}
           rowsPerPage={rowsPerPage}
