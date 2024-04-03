@@ -11,6 +11,8 @@ import TableSortLabel from "@mui/material/TableSortLabel";
 import { visuallyHidden } from "@mui/utils";
 import * as React from "react";
 
+import responseMock from "../../mocks/tags.json";
+
 /**
  * copied and edited from mui documentation
  * https://mui.com/material-ui/react-table/#basic-table
@@ -21,29 +23,6 @@ interface Data {
   name: string;
   count: number;
 }
-
-function createData(name: string, count: number): Data {
-  return {
-    name,
-    count,
-  };
-}
-
-const rows = [
-  createData("Cupcake", 1234),
-  createData("Donut", 1234),
-  createData("Eclair", 1234),
-  createData("Frozen yoghurt", 1234),
-  createData("Gingerbread", 1234),
-  createData("Honeycomb", 1234),
-  createData("Ice cream sandwich", 1234),
-  createData("Jelly Bean", 1234),
-  createData("KitKat", 1234),
-  createData("Lollipop", 1234),
-  createData("Marshmall", 1234),
-  createData("Nougat", 1234),
-  createData("Oreo", 1234),
-];
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -57,7 +36,7 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 
 type Order = "asc" | "desc";
 
-function getComparator<Key extends keyof any>(
+function getComparator<Key extends keyof Data>(
   order: Order,
   orderBy: Key
 ): (
@@ -165,6 +144,8 @@ export default function EnhancedTable() {
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
+
+  const rows = responseMock.items;
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
