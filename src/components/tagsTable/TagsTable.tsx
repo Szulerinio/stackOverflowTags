@@ -130,7 +130,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   );
 }
 
-export default function EnhancedTable() {
+export default function TagsTable() {
   const [order, setOrder] = React.useState<Order>("asc");
   const [orderBy, setOrderBy] = React.useState<keyof Data>("count");
   const [page, setPage] = React.useState(0);
