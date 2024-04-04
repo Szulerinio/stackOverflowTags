@@ -66,10 +66,9 @@ const StyledInputRoot = styled("div")(
     theme.palette.mode === "dark" ? "rgba(0,0,0, 0.5)" : "rgba(0,0,0, 0.05)"
   };
   display: grid;
-  grid-template-columns: 1fr 19px;
+  grid-template-columns: auto 1fr auto 19px;;
   grid-template-rows: 1fr 1fr;
   overflow: hidden;
-  column-gap: 8px;
   padding: 4px;
 
   &.${numberInputClasses.focused} {
@@ -94,7 +93,6 @@ const StyledInputElement = styled("input")(
   font-family: inherit;
   font-weight: 400;
   line-height: 1.5;
-  grid-column: 1/2;
   grid-row: 1/3;
   color: ${theme.palette.mode === "dark" ? grey[300] : grey[900]};
   background: inherit;
@@ -114,7 +112,7 @@ const StyledButton = styled("button")(
   appearance: none;
   padding: 0;
   width: 19px;
-  height: 19px;
+  height: 20px;
   font-family: system-ui, sans-serif;
   font-size: 0.875rem;
   line-height: 1;
@@ -133,7 +131,7 @@ const StyledButton = styled("button")(
   }
 
   &.${numberInputClasses.incrementButton} {
-    grid-column: 2/3;
+    grid-column: 4/5;
     grid-row: 1/2;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
@@ -152,7 +150,7 @@ const StyledButton = styled("button")(
   }
 
   &.${numberInputClasses.decrementButton} {
-    grid-column: 2/3;
+    grid-column: 4/5;
     grid-row: 2/3;
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
@@ -160,21 +158,33 @@ const StyledButton = styled("button")(
     border-color: ${theme.palette.mode === "dark" ? grey[700] : grey[200]};
     background: ${theme.palette.mode === "dark" ? grey[900] : grey[50]};
     color: ${theme.palette.mode === "dark" ? grey[200] : grey[900]};
-  }
 
-  &:hover {
-    cursor: pointer;
-    color: #FFF;
-    background: ${theme.palette.mode === "dark" ? blue[600] : blue[500]};
-    border-color: ${theme.palette.mode === "dark" ? blue[400] : blue[600]};
-  }
-
-  & .arrow {
-    transform: translateY(-1px);
+    &:hover {
+      cursor: pointer;
+      color: #FFF;
+      background: ${theme.palette.mode === "dark" ? blue[600] : blue[500]};
+      border-color: ${theme.palette.mode === "dark" ? blue[400] : blue[600]};
+    }
   }
 
   & .arrow {
     transform: translateY(-1px);
   }
+
+  & .arrow {
+    transform: translateY(-1px);
+  }
+`
+);
+
+export const NumberInputAdornment = styled("div")(
+  ({ theme }) => `
+  margin: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  grid-row: 1/3;
+  grid-column:3/4;
+  color: ${theme.palette.mode === "dark" ? grey[500] : grey[700]};
 `
 );
