@@ -130,11 +130,10 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   );
 }
 
-export function TagsTable() {
+export function TagsTable({ perPage }: { perPage: number }) {
   const [order, setOrder] = React.useState<Order>("asc");
   const [orderBy, setOrderBy] = React.useState<keyof Data>("count");
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -151,25 +150,16 @@ export function TagsTable() {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
-
   const visibleRows = React.useMemo(
     () =>
       stableSort(rows, getComparator(order, orderBy)).slice(
-        page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage
+        page * perPage,
+        page * perPage + perPage
       ),
-    [order, orderBy, page, rowsPerPage]
+    [order, orderBy, page, perPage]
   );
+
+  const emptyRows = perPage - visibleRows.length;
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -212,10 +202,9 @@ export function TagsTable() {
           rowsPerPageOptions={[]}
           component="div"
           count={rows.length}
-          rowsPerPage={rowsPerPage}
+          rowsPerPage={perPage}
           page={page}
           onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
     </Box>

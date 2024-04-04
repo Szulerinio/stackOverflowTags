@@ -15,10 +15,10 @@ function App() {
         endAdornment={<NumberInputAdornment>Per page</NumberInputAdornment>}
         value={perPage}
         onChange={(event, val) => {
-          if (val !== null && val >= 0) setPerPage(val);
+          if (val !== null && val >= 1) setPerPage(val);
         }}
       ></NumberInput>
-      <TagsTable></TagsTable>
+      <TagsTable perPage={perPage}></TagsTable>
     </Box>
   );
 }
