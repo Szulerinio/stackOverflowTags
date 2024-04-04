@@ -24,7 +24,7 @@ function App() {
           min={1}
           endAdornment={<NumberInputAdornment>Per page</NumberInputAdornment>}
           value={perPage}
-          onChange={(event, val) => {
+          onChange={(_event, val) => {
             if (val !== null && val >= 1) setPerPage(val);
           }}
         ></NumberInput>
