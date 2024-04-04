@@ -8,7 +8,6 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
-import { visuallyHidden } from "@mui/utils";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import * as React from "react";
 import { tagsResponse } from "../../models/tags.model";
@@ -79,7 +78,20 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             >
               {headCell.label}
               {orderBy === headCell.id ? (
-                <Box component="span" sx={visuallyHidden}>
+                <Box
+                  component="span"
+                  sx={{
+                    border: 0,
+                    clip: "rect(0 0 0 0)",
+                    height: "1px",
+                    margin: "-1px",
+                    overflow: "hidden",
+                    padding: 0,
+                    position: "absolute",
+                    whiteSpace: "nowrap",
+                    width: "1px",
+                  }}
+                >
                   {order === "desc" ? "sorted descending" : "sorted ascending"}
                 </Box>
               ) : null}
