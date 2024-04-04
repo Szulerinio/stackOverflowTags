@@ -9,9 +9,11 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import { visuallyHidden } from "@mui/utils";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import * as React from "react";
-
-import responseMock from "../../mocks/tags.json";
+import { tagsResponse } from "../../models/tags.model";
+import { CircularProgress, Snackbar } from "@mui/material";
+import { useEffect } from "react";
 
 /**
  * copied and edited from mui documentation
@@ -21,51 +23,10 @@ import responseMock from "../../mocks/tags.json";
 
 interface Data {
   name: string;
-  count: number;
-}
-
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
+  popular: number;
 }
 
 type Order = "asc" | "desc";
-
-function getComparator<Key extends keyof Data>(
-  order: Order,
-  orderBy: Key
-): (
-  a: { [key in Key]: number | string },
-  b: { [key in Key]: number | string }
-) => number {
-  return order === "desc"
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-// Since 2020 all major browsers ensure sort stability with Array.prototype.sort().
-// stableSort() brings sort stability to non-modern browsers (notably IE11). If you
-// only support modern browsers you can replace stableSort(exampleArray, exampleComparator)
-// with exampleArray.slice().sort(exampleComparator)
-function stableSort<T>(
-  array: readonly T[],
-  comparator: (a: T, b: T) => number
-) {
-  const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
 
 interface HeadCell {
   id: keyof Data;
@@ -80,7 +41,7 @@ const headCells: readonly HeadCell[] = [
     label: "Name",
   },
   {
-    id: "count",
+    id: "popular",
     numeric: true,
     label: "Count",
   },
@@ -131,9 +92,37 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 }
 
 export function TagsTable({ perPage }: { perPage: number }) {
-  const [order, setOrder] = React.useState<Order>("asc");
-  const [orderBy, setOrderBy] = React.useState<keyof Data>("count");
+  const [order, setOrder] = React.useState<Order>("desc");
+  const [orderBy, setOrderBy] = React.useState<keyof Data>("popular");
   const [page, setPage] = React.useState(0);
+  const [isSnackbarOpen, setIsSnackbarOpen] = React.useState(false);
+  const fetchTags = async (
+    page: number = 0,
+    perPage: number = 10,
+    order: "asc" | "desc" = "desc",
+    orderBy: "popular" | "name" = "popular"
+  ) => {
+    console.log("response");
+    const response = await fetch(
+      `https://api.stackexchange.com/2.3/tags?page=${page + 1}&pagesize=${perPage}&order=${order}&sort=${orderBy}&site=stackoverflow&filter=!nNPvSNVZJS`
+    );
+    if (!response.ok) {
+      throw new Error("Something went wrong");
+    }
+    return response.json();
+  };
+
+  const { isPending, isError, data } = useQuery<tagsResponse>({
+    queryKey: ["tags", page, perPage, order, orderBy],
+    queryFn: () => fetchTags(page, perPage, order, orderBy),
+    placeholderData: keepPreviousData,
+  });
+
+  useEffect(() => {
+    if (isError) {
+      setIsSnackbarOpen(true);
+    }
+  }, [isError]);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -144,27 +133,20 @@ export function TagsTable({ perPage }: { perPage: number }) {
     setOrderBy(property);
   };
 
-  const rows = responseMock.items;
-
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
 
-  const visibleRows = React.useMemo(
-    () =>
-      stableSort(rows, getComparator(order, orderBy)).slice(
-        page * perPage,
-        page * perPage + perPage
-      ),
-    [order, orderBy, page, perPage]
-  );
-
-  const emptyRows = perPage - visibleRows.length;
+  const emptyRows = perPage - (data?.items?.length || 0);
 
   return (
     <Box sx={{ width: "100%" }}>
       <Paper sx={{ width: "100%", mb: 2 }}>
-        <TableContainer>
+        <TableContainer className={isPending ? "loading" : ""}>
+          <Box sx={{ display: "flex", padding: "16px" }}>
+            {`Requests left: `}
+            {data?.quota_remaining ?? <CircularProgress></CircularProgress>}
+          </Box>
           <Table
             sx={{ minWidth: 750 }}
             aria-labelledby="tableTitle"
@@ -176,7 +158,7 @@ export function TagsTable({ perPage }: { perPage: number }) {
               onRequestSort={handleRequestSort}
             />
             <TableBody>
-              {visibleRows.map((row) => {
+              {data?.items?.map((row) => {
                 return (
                   <TableRow hover tabIndex={-1} key={row.name}>
                     <TableCell component="th" scope="row">
@@ -201,12 +183,18 @@ export function TagsTable({ perPage }: { perPage: number }) {
         <TablePagination
           rowsPerPageOptions={[]}
           component="div"
-          count={rows.length}
+          count={data?.total || 0}
           rowsPerPage={perPage}
           page={page}
           onPageChange={handleChangePage}
         />
       </Paper>
+      <Snackbar
+        open={isSnackbarOpen}
+        autoHideDuration={6000}
+        onClose={() => setIsSnackbarOpen(false)}
+        message="Something went wrong"
+      />
     </Box>
   );
 }
