@@ -137,7 +137,7 @@ export function TagsTable({ perPage }: { perPage: number }) {
   }, [isError]);
 
   const handleRequestSort = (
-    event: React.MouseEvent<unknown>,
+    _event: React.MouseEvent<unknown>,
     property: keyof Data
   ) => {
     const isAsc = orderBy === property && order === "asc";
@@ -145,7 +145,7 @@ export function TagsTable({ perPage }: { perPage: number }) {
     setOrderBy(property);
   };
 
-  const handleChangePage = (event: unknown, newPage: number) => {
+  const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
   };
 
