@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import "./App.css";
-import EnhancedTable from "./components/tagsTable/TagsTable";
+import { TagsTable } from "./components/tagsTable/TagsTable";
 import {
   NumberInput,
   NumberInputAdornment,
@@ -18,7 +18,7 @@ function App() {
           if (val !== null && val >= 0) setPerPage(val);
         }}
       ></NumberInput>
-      <EnhancedTable></EnhancedTable>
+      <TagsTable></TagsTable>
     </Box>
   );
 }
